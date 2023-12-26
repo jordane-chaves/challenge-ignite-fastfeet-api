@@ -1,5 +1,6 @@
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 import { Order } from '../../enterprise/entities/order'
 import { OrdersRepository } from '../repositories/orders-repository'
@@ -15,6 +16,7 @@ type PostOrderUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class PostOrderUseCase {
   constructor(private ordersRepository: OrdersRepository) {}
 

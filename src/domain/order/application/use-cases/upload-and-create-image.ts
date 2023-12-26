@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either'
+import { Injectable } from '@nestjs/common'
 
 import { Image } from '../../enterprise/entities/image'
 import { ImagesRepository } from '../repositories/images-repository'
@@ -18,6 +19,7 @@ type UploadAndCreateImageUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class UploadAndCreateImageUseCase {
   constructor(
     private imagesRepository: ImagesRepository,

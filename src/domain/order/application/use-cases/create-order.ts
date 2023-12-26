@@ -1,6 +1,7 @@
 import { Either, left, right } from '@/core/either'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 import { Order } from '../../enterprise/entities/order'
 import { CustomersRepository } from '../repositories/customers-repository'
@@ -18,6 +19,7 @@ type CreateOrderUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateOrderUseCase {
   constructor(
     private ordersRepository: OrdersRepository,

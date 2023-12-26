@@ -2,8 +2,11 @@
 node_modules
 
 # Env
-.env
-!.env.example
+.env*
+!.env*.example
 
 # Build
 dist
+
+# Docker
+data

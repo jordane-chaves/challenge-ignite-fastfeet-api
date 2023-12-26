@@ -40,10 +40,16 @@ describe('Edit Order', () => {
 
     const result = await sut.execute({
       orderId: 'order-1',
+      customerId: 'customer-1',
       description: 'New package',
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryOrdersRepository.items[0].description).toEqual('New package')
+    expect(inMemoryOrdersRepository.items[0]).toEqual(
+      expect.objectContaining({
+        customerId: new UniqueEntityID('customer-1'),
+        description: 'New package',
+      }),
+    )
   })
 })

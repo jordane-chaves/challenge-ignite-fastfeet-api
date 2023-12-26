@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: fastfeet-pg
+    image: postgres
+    ports:
+      - ${DATABASE_PORT}:5432
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB}
+      PGDATA: /data/postgres
+    volumes:
+      - ./data/pg:/data/postgres

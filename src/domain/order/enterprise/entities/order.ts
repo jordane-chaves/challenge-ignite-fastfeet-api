@@ -23,6 +23,10 @@ export class Order extends AggregateRoot<OrderProps> {
     return this.props.customerId
   }
 
+  set customerId(customerId: UniqueEntityID) {
+    this.props.customerId = customerId
+  }
+
   get deliverymanId() {
     return this.props.deliverymanId
   }

@@ -13,4 +13,8 @@ export class InMemoryAdminsRepository implements AdminsRepository {
 
     return admin
   }
+
+  async create(admin: Admin): Promise<void> {
+    this.items.push(admin)
+  }
 }

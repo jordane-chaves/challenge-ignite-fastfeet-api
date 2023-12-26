@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRoles {
+  ADMIN
+  DELIVERYMAN
+  RECIPIENT
+}
+
+model User {
+  id       String    @id @default(uuid())
+  name     String
+  cpf      String    @unique
+  password String
+  role     UserRoles @default(RECIPIENT)
+
+  orders            Order[]
+  deliverymanOrders Order[]  @relation("deliverymanOrders")
+  address           Address?
+
+  @@map("users")
+}
+
+model Address {
+  id           String  @id @default(uuid())
+  recipientId  String  @unique @map("recipient_id")
+  street       String
+  number       Int
+  neighborhood String
+  city         String
+  cep          String
+  latitude     Decimal
+  longitude    Decimal
+
+  recipient User @relation(fields: [recipientId], references: [id])
+
+  @@map("addresses")
+}
+
+model Order {
+  id            String    @id @default(uuid())
+  recipientId   String    @map("recipient_id")
+  deliverymanId String?   @map("deliveryman_id")
+  description   String
+  postedAt      DateTime? @map("posted_at")
+  withdrawnAt   DateTime? @map("withdrawn_at")
+  deliveredAt   DateTime? @map("delivered_at")
+  returnedAt    DateTime? @map("returned_at")
+
+  recipient   User   @relation(fields: [recipientId], references: [id])
+  deliveryman User?  @relation("deliverymanOrders", fields: [deliverymanId], references: [id])
+  image       Image?
+
+  @@map("orders")
+}
+
+model Image {
+  id      String  @id @default(uuid())
+  orderId String? @unique @map("order_id")
+  title   String
+  url     String
+
+  order Order? @relation(fields: [orderId], references: [id])
+
+  @@map("images")
+}

@@ -1,4 +1,5 @@
 import { Either, left, right } from '@/core/either'
+import { Injectable } from '@nestjs/common'
 
 import { Encrypter } from '../cryptography/encrypter'
 import { HashComparer } from '../cryptography/hash-comparer'
@@ -17,6 +18,7 @@ type AuthenticateAdminUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class AuthenticateAdminUseCase {
   constructor(
     private adminsRepository: AdminsRepository,
@@ -46,6 +48,7 @@ export class AuthenticateAdminUseCase {
 
     const accessToken = await this.encrypter.encrypt({
       sub: admin.id.toString(),
+      role: 'admin',
     })
 
     return right({
