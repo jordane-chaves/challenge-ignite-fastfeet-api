@@ -1,11 +1,11 @@
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 import { Recipient } from '../../enterprise/entities/recipient'
 import { CPF } from '../../enterprise/entities/value-objects/cpf'
 import { RecipientAddress } from '../../enterprise/entities/value-objects/recipient-address'
 import { RecipientsRepository } from '../repositories/recipients-repository'
-import { Location } from '../services/location'
 
 interface EditRecipientUseCaseRequest {
   recipientId: string
@@ -16,6 +16,8 @@ interface EditRecipientUseCaseRequest {
   neighborhood: string
   city: string
   cep: string
+  latitude: number
+  longitude: number
 }
 
 type EditRecipientUseCaseResponse = Either<
@@ -25,25 +27,31 @@ type EditRecipientUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class EditRecipientUseCase {
-  constructor(
-    private recipientsRepository: RecipientsRepository,
-    private location: Location,
-  ) {}
+  constructor(private recipientsRepository: RecipientsRepository) {}
 
   async execute(
     request: EditRecipientUseCaseRequest,
   ): Promise<EditRecipientUseCaseResponse> {
-    const { recipientId, name, cpf, street, number, neighborhood, city, cep } =
-      request
+    const {
+      recipientId,
+      name,
+      cpf,
+      street,
+      number,
+      neighborhood,
+      city,
+      cep,
+      latitude,
+      longitude,
+    } = request
 
     const recipient = await this.recipientsRepository.findById(recipientId)
 
     if (!recipient) {
       return left(new ResourceNotFoundError())
     }
-
-    const { latitude, longitude } = await this.location.search({ cep })
 
     const newAddress = RecipientAddress.create({
       recipientId: recipient.id,

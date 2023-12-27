@@ -2,7 +2,6 @@ import { makeRecipient } from 'test/factories/make-recipient'
 import { makeRecipientAddress } from 'test/factories/make-recipient-address'
 import { InMemoryRecipientAddressesRepository } from 'test/repositories/in-memory-recipient-addresses-repository'
 import { InMemoryRecipientsRepository } from 'test/repositories/in-memory-recipients-repository'
-import { FakeLocation } from 'test/services/fake-location'
 
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
@@ -12,7 +11,6 @@ import { EditRecipientUseCase } from './edit-recipient'
 
 let inMemoryRecipientsRepository: InMemoryRecipientsRepository
 let inMemoryRecipientAddressesRepository: InMemoryRecipientAddressesRepository
-let fakeLocation: FakeLocation
 
 let sut: EditRecipientUseCase
 
@@ -24,9 +22,7 @@ describe('Edit Recipient', () => {
       inMemoryRecipientAddressesRepository,
     )
 
-    fakeLocation = new FakeLocation()
-
-    sut = new EditRecipientUseCase(inMemoryRecipientsRepository, fakeLocation)
+    sut = new EditRecipientUseCase(inMemoryRecipientsRepository)
   })
 
   it('should be able to edit a recipient', async () => {
@@ -60,6 +56,8 @@ describe('Edit Recipient', () => {
       number: 5,
       neighborhood: 'Center',
       city: 'City 02',
+      latitude: -20.4446516,
+      longitude: -44.7663455,
     })
 
     expect(result.isRight()).toBe(true)
@@ -77,8 +75,8 @@ describe('Edit Recipient', () => {
         number: 5,
         neighborhood: 'Center',
         city: 'City 02',
-        latitude: expect.any(Number),
-        longitude: expect.any(Number),
+        latitude: -20.4446516,
+        longitude: -44.7663455,
       }),
     )
   })
@@ -108,6 +106,8 @@ describe('Edit Recipient', () => {
       number: 5,
       neighborhood: 'Center',
       city: 'City 02',
+      latitude: -20.4446516,
+      longitude: -44.7663455,
     })
 
     expect(inMemoryRecipientAddressesRepository.items[0]).toEqual(
@@ -118,8 +118,8 @@ describe('Edit Recipient', () => {
         number: 5,
         neighborhood: 'Center',
         city: 'City 02',
-        latitude: expect.any(Number),
-        longitude: expect.any(Number),
+        latitude: -20.4446516,
+        longitude: -44.7663455,
       }),
     )
   })

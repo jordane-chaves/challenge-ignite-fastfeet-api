@@ -1,5 +1,6 @@
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 
 import { HashGenerator } from '../cryptography/hash-generator'
 import { RecipientsRepository } from '../repositories/recipients-repository'
@@ -15,6 +16,7 @@ type ChangeRecipientPasswordUseCaseResponse = Either<
   null
 >
 
+@Injectable()
 export class ChangeRecipientPasswordUseCase {
   constructor(
     private recipientsRepository: RecipientsRepository,

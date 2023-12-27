@@ -1,5 +1,7 @@
 import { AdminsRepository } from '@/domain/account/application/repositories/admins-repository'
 import { DeliverymenRepository } from '@/domain/account/application/repositories/deliverymen-repository'
+import { RecipientAddressesRepository } from '@/domain/account/application/repositories/recipient-addresses-repository'
+import { RecipientsRepository } from '@/domain/account/application/repositories/recipients-repository'
 import { CustomersRepository } from '@/domain/order/application/repositories/customers-repository'
 import { ImagesRepository } from '@/domain/order/application/repositories/images-repository'
 import { OrdersRepository } from '@/domain/order/application/repositories/orders-repository'
@@ -11,6 +13,8 @@ import { PrismaCustomersRepository } from './prisma/repositories/prisma-customer
 import { PrismaDeliverymenRepository } from './prisma/repositories/prisma-deliverymen-repository'
 import { PrismaImagesRepository } from './prisma/repositories/prisma-images-repository'
 import { PrismaOrdersRepository } from './prisma/repositories/prisma-orders-repository'
+import { PrismaRecipientAddressesRepository } from './prisma/repositories/prisma-recipient-addresses-repository'
+import { PrismaRecipientsRepository } from './prisma/repositories/prisma-recipients-repository'
 
 @Module({
   providers: [
@@ -35,6 +39,14 @@ import { PrismaOrdersRepository } from './prisma/repositories/prisma-orders-repo
       provide: DeliverymenRepository,
       useClass: PrismaDeliverymenRepository,
     },
+    {
+      provide: RecipientsRepository,
+      useClass: PrismaRecipientsRepository,
+    },
+    {
+      provide: RecipientAddressesRepository,
+      useClass: PrismaRecipientAddressesRepository,
+    },
   ],
   exports: [
     AdminsRepository,
@@ -42,6 +54,8 @@ import { PrismaOrdersRepository } from './prisma/repositories/prisma-orders-repo
     DeliverymenRepository,
     ImagesRepository,
     PrismaService,
+    RecipientsRepository,
+    RecipientAddressesRepository,
     OrdersRepository,
   ],
 })
