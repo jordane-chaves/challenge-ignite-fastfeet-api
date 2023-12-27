@@ -1,5 +1,6 @@
 import request from 'supertest'
 import { AdminFactory } from 'test/factories/make-admin'
+import { DeliverymanFactory } from 'test/factories/make-deliveryman'
 
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
@@ -8,16 +9,17 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 
-describe('Create Admin (E2E)', () => {
+describe('Delete Deliveryman (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
   let prisma: PrismaService
   let adminFactory: AdminFactory
+  let deliverymanFactory: DeliverymanFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [AdminFactory],
+      providers: [AdminFactory, DeliverymanFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -25,36 +27,35 @@ describe('Create Admin (E2E)', () => {
     jwt = moduleRef.get(JwtService)
     prisma = moduleRef.get(PrismaService)
     adminFactory = moduleRef.get(AdminFactory)
+    deliverymanFactory = moduleRef.get(DeliverymanFactory)
 
     await app.init()
   })
 
-  test('[POST] /accounts/admin', async () => {
+  test('[DELETE] /accounts/deliveryman/:id', async () => {
     const admin = await adminFactory.makePrismaAdmin()
+    const deliveryman = await deliverymanFactory.makePrismaDeliveryman()
 
     const accessToken = await jwt.signAsync({
       sub: admin.id.toString(),
       role: 'admin',
     })
 
+    const deliverymanId = deliveryman.id.toString()
+
     const response = await request(app.getHttpServer())
-      .post('/accounts/admin')
+      .delete(`/accounts/deliveryman/${deliverymanId}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        name: 'John Doe',
-        cpf: '123.123.123-00',
-        password: '123456',
-      })
+      .send()
 
-    expect(response.statusCode).toBe(201)
+    expect(response.statusCode).toBe(204)
 
-    const userOnDatabase = await prisma.user.findUnique({
+    const usersOnDatabase = await prisma.user.findMany({
       where: {
-        cpf: '123.123.123-00',
-        role: 'ADMIN',
+        role: 'DELIVERYMAN',
       },
     })
 
-    expect(userOnDatabase).toBeTruthy()
+    expect(usersOnDatabase).toHaveLength(0)
   })
 })

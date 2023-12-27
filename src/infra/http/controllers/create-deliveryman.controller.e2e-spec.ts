@@ -8,7 +8,7 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 
-describe('Create Admin (E2E)', () => {
+describe('Create Deliveryman (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
   let prisma: PrismaService
@@ -29,7 +29,7 @@ describe('Create Admin (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /accounts/admin', async () => {
+  test('[POST] /accounts/deliveryman', async () => {
     const admin = await adminFactory.makePrismaAdmin()
 
     const accessToken = await jwt.signAsync({
@@ -38,7 +38,7 @@ describe('Create Admin (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .post('/accounts/admin')
+      .post('/accounts/deliveryman')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'John Doe',
@@ -51,7 +51,7 @@ describe('Create Admin (E2E)', () => {
     const userOnDatabase = await prisma.user.findUnique({
       where: {
         cpf: '123.123.123-00',
-        role: 'ADMIN',
+        role: 'DELIVERYMAN',
       },
     })
 
