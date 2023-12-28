@@ -20,9 +20,10 @@ model User {
   password String
   role     UserRoles @default(RECIPIENT)
 
-  orders            Order[]
-  deliverymanOrders Order[]  @relation("deliverymanOrders")
   address           Address?
+  deliverymanOrders Order[]        @relation("deliverymanOrders")
+  orders            Order[]
+  notifications     Notification[]
 
   @@map("users")
 }
@@ -69,4 +70,17 @@ model Image {
   order Order? @relation(fields: [orderId], references: [id])
 
   @@map("images")
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  recipientId String    @map("recipient_id")
+  title       String
+  content     String
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  recipient User @relation(fields: [recipientId], references: [id])
+
+  @@map("notifications")
 }

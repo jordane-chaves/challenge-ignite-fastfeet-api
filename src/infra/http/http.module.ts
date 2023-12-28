@@ -12,6 +12,7 @@ import { EditDeliverymanUseCase } from '@/domain/account/application/use-cases/e
 import { EditRecipientUseCase } from '@/domain/account/application/use-cases/edit-recipient'
 import { GetDeliverymanUseCase } from '@/domain/account/application/use-cases/get-deliveryman'
 import { GetRecipientUseCase } from '@/domain/account/application/use-cases/get-recipient'
+import { ReadNotificationUseCase } from '@/domain/notification/application/use-cases/read-notification'
 import { CreateOrderUseCase } from '@/domain/order/application/use-cases/create-order'
 import { DeleteOrderUseCase } from '@/domain/order/application/use-cases/delete-order'
 import { DeliverOrderUseCase } from '@/domain/order/application/use-cases/deliver-order'
@@ -53,6 +54,7 @@ import { GetDeliverymanController } from './controllers/get-deliveryman.controll
 import { GetOrderController } from './controllers/get-order.controller'
 import { GetRecipientController } from './controllers/get-recipient.controller'
 import { PostOrderController } from './controllers/post-order.controller'
+import { ReadNotificationController } from './controllers/read-notification.controller'
 import { ReturnOrderController } from './controllers/return-order.controller'
 import { UploadImageController } from './controllers/upload-image.controller'
 import { WithdrawOrderController } from './controllers/withdraw-order.controller'
@@ -83,6 +85,7 @@ import { WithdrawOrderController } from './controllers/withdraw-order.controller
     GetRecipientController,
     GetOrderController,
     PostOrderController,
+    ReadNotificationController,
     ReturnOrderController,
     UploadImageController,
     WithdrawOrderController,
@@ -111,6 +114,7 @@ import { WithdrawOrderController } from './controllers/withdraw-order.controller
     GetRecipientUseCase,
     GetOrderUseCase,
     PostOrderUseCase,
+    ReadNotificationUseCase,
     ReturnOrderUseCase,
     UploadAndCreateImageUseCase,
     WithdrawOrderUseCase,
