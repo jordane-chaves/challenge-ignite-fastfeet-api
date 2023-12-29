@@ -12,6 +12,17 @@ Content-Type: application/json
 
 ###
 
+# @name authenticate_deliveryman
+POST {{baseUrl}}/sessions/deliveryman
+Content-Type: application/json
+
+{
+  "cpf": "123.123.123-03",
+  "password": "123456"
+}
+
+###
+
 # @name create_admin
 POST {{baseUrl}}/accounts/admin
 Content-Type: application/json
@@ -65,3 +76,10 @@ Authorization: Bearer {{authToken}}
   "customerId": "{{create_recipient.response.body.$.recipient.id}}",
   "description": "Package 01"
 }
+
+###
+
+# @name withdraw_order
+PATCH {{baseUrl}}/orders/{{create_order.response.body.$.order.id}}/withdraw
+Content-Type: application/json
+Authorization: Bearer {{authenticate_deliveryman.response.body.$.access_token}}
