@@ -1,9 +1,11 @@
 import { z } from 'zod'
 
 import { CreateAdminUseCase } from '@/domain/account/application/use-cases/create-admin'
+import { AccountAlreadyExistsError } from '@/domain/account/application/use-cases/errors/account-already-exists-error'
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   HttpCode,
   Post,
@@ -38,7 +40,14 @@ export class CreateAdminController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException()
+      const error = result.value
+
+      switch (error.constructor) {
+        case AccountAlreadyExistsError:
+          throw new ConflictException(error.message)
+        default:
+          throw new BadRequestException()
+      }
     }
 
     const { admin } = result.value

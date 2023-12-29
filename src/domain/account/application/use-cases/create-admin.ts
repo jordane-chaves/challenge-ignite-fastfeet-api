@@ -1,10 +1,11 @@
-import { Either, right } from '@/core/either'
+import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 
 import { Admin } from '../../enterprise/entities/admin'
 import { CPF } from '../../enterprise/entities/value-objects/cpf'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { AdminsRepository } from '../repositories/admins-repository'
+import { AccountAlreadyExistsError } from './errors/account-already-exists-error'
 
 interface CreateAdminUseCaseRequest {
   name: string
@@ -13,7 +14,7 @@ interface CreateAdminUseCaseRequest {
 }
 
 type CreateAdminUseCaseResponse = Either<
-  null,
+  AccountAlreadyExistsError,
   {
     admin: Admin
   }
@@ -30,6 +31,12 @@ export class CreateAdminUseCase {
     request: CreateAdminUseCaseRequest,
   ): Promise<CreateAdminUseCaseResponse> {
     const { name, cpf, password } = request
+
+    const adminWithSameCpf = await this.adminsRepository.findByCpf(cpf)
+
+    if (adminWithSameCpf) {
+      return left(new AccountAlreadyExistsError(cpf))
+    }
 
     const hashedPassword = await this.hashGenerator.hash(password)
 

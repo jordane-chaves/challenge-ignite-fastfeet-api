@@ -1,10 +1,11 @@
-import { Either, right } from '@/core/either'
+import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 
 import { Deliveryman } from '../../enterprise/entities/deliveryman'
 import { CPF } from '../../enterprise/entities/value-objects/cpf'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { DeliverymenRepository } from '../repositories/deliverymen-repository'
+import { AccountAlreadyExistsError } from './errors/account-already-exists-error'
 
 interface CreateDeliverymanUseCaseRequest {
   name: string
@@ -13,7 +14,7 @@ interface CreateDeliverymanUseCaseRequest {
 }
 
 type CreateDeliverymanUseCaseResponse = Either<
-  null,
+  AccountAlreadyExistsError,
   {
     deliveryman: Deliveryman
   }
@@ -30,6 +31,13 @@ export class CreateDeliverymanUseCase {
     request: CreateDeliverymanUseCaseRequest,
   ): Promise<CreateDeliverymanUseCaseResponse> {
     const { name, cpf, password } = request
+
+    const deliverymanWithSameCpf =
+      await this.deliverymenRepository.findByCpf(cpf)
+
+    if (deliverymanWithSameCpf) {
+      return left(new AccountAlreadyExistsError(cpf))
+    }
 
     const hashedPassword = await this.hashGenerator.hash(password)
 

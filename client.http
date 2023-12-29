@@ -1,18 +1,6 @@
 @baseUrl = http://localhost:3333
 @authToken = {{authenticate_admin.response.body.$.access_token}}
 
-# @name create_admin
-POST {{baseUrl}}/accounts/admin
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "cpf": "123.123.123-01",
-  "password": "123456"
-}
-
-###
-
 # @name authenticate_admin
 POST {{baseUrl}}/sessions/admin
 Content-Type: application/json
@@ -24,12 +12,56 @@ Content-Type: application/json
 
 ###
 
+# @name create_admin
+POST {{baseUrl}}/accounts/admin
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "John Doe",
+  "cpf": "123.123.123-03",
+  "password": "123456"
+}
+
+###
+
+# @name create_recipient
+POST {{baseUrl}}/accounts/recipient
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "John Doe 2",
+  "cpf": "123.123.123-02",
+  "password": "123456",
+  "street": "Rua Belo Horizonte",
+  "number": 1000,
+  "neighborhood": "Centro",
+  "city": "Cláudio",
+  "cep": "35530000"
+}
+
+###
+
+# @name create_deliveryman
+POST {{baseUrl}}/accounts/deliveryman
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "John Doe 3",
+  "cpf": "123.123.123-03",
+  "password": "123456"
+}
+
+###
+
 # @name create_order
 POST {{baseUrl}}/orders
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "customerId": "fb4b652f-3120-4fed-8dd2-1b8df9d263d3",
+  "customerId": "{{create_recipient.response.body.$.recipient.id}}",
   "description": "Package 01"
 }

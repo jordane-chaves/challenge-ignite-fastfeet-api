@@ -1,17 +1,20 @@
 import { z } from 'zod'
 
 import { CreateDeliverymanUseCase } from '@/domain/account/application/use-cases/create-deliveryman'
+import { AccountAlreadyExistsError } from '@/domain/account/application/use-cases/errors/account-already-exists-error'
 import { Roles } from '@/infra/auth/authorization/roles'
 import { UserRoles } from '@/infra/auth/authorization/user-roles'
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   HttpCode,
   Post,
 } from '@nestjs/common'
 
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
+import { DeliverymanPresenter } from '../presenters/deliveryman-presenter'
 
 const createDeliverymanBodySchema = z.object({
   name: z.string(),
@@ -40,13 +43,20 @@ export class CreateDeliverymanController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException()
+      const error = result.value
+
+      switch (error.constructor) {
+        case AccountAlreadyExistsError:
+          throw new ConflictException(error.message)
+        default:
+          throw new BadRequestException()
+      }
     }
 
     const { deliveryman } = result.value
 
     return {
-      deliveryman,
+      deliveryman: DeliverymanPresenter.toHTTP(deliveryman),
     }
   }
 }

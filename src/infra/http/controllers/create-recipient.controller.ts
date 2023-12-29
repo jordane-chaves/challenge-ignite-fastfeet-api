@@ -1,11 +1,13 @@
 import { z } from 'zod'
 
 import { CreateRecipientUseCase } from '@/domain/account/application/use-cases/create-recipient'
+import { AccountAlreadyExistsError } from '@/domain/account/application/use-cases/errors/account-already-exists-error'
 import { Roles } from '@/infra/auth/authorization/roles'
 import { UserRoles } from '@/infra/auth/authorization/user-roles'
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   HttpCode,
   Post,
@@ -52,7 +54,14 @@ export class CreateRecipientController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException()
+      const error = result.value
+
+      switch (error.constructor) {
+        case AccountAlreadyExistsError:
+          throw new ConflictException(error.message)
+        default:
+          throw new BadRequestException()
+      }
     }
 
     const { recipient } = result.value

@@ -1,4 +1,4 @@
-import { Either, right } from '@/core/either'
+import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 
 import { Recipient } from '../../enterprise/entities/recipient'
@@ -7,6 +7,7 @@ import { RecipientAddress } from '../../enterprise/entities/value-objects/recipi
 import { HashGenerator } from '../cryptography/hash-generator'
 import { RecipientsRepository } from '../repositories/recipients-repository'
 import { Location } from '../services/location'
+import { AccountAlreadyExistsError } from './errors/account-already-exists-error'
 
 interface CreateRecipientUseCaseRequest {
   name: string
@@ -20,7 +21,7 @@ interface CreateRecipientUseCaseRequest {
 }
 
 type CreateRecipientUseCaseResponse = Either<
-  null,
+  AccountAlreadyExistsError,
   {
     recipient: Recipient
   }
@@ -39,6 +40,12 @@ export class CreateRecipientUseCase {
   ): Promise<CreateRecipientUseCaseResponse> {
     const { name, cpf, password, cep, city, neighborhood, number, street } =
       request
+
+    const recipientWithSameCpf = await this.recipientsRepository.findByCpf(cpf)
+
+    if (recipientWithSameCpf) {
+      return left(new AccountAlreadyExistsError(cpf))
+    }
 
     const hashedPassword = await this.hashGenerator.hash(password)
 

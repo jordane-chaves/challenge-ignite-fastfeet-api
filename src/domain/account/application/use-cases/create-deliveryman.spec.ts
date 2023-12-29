@@ -1,7 +1,10 @@
 import { FakeHasher } from 'test/cryptography/fake-hasher'
+import { makeDeliveryman } from 'test/factories/make-deliveryman'
 import { InMemoryDeliverymenRepository } from 'test/repositories/in-memory-deliverymen-repository'
 
+import { CPF } from '../../enterprise/entities/value-objects/cpf'
 import { CreateDeliverymanUseCase } from './create-deliveryman'
+import { AccountAlreadyExistsError } from './errors/account-already-exists-error'
 
 let inMemoryDeliverymenRepository: InMemoryDeliverymenRepository
 let fakeHasher: FakeHasher
@@ -45,5 +48,24 @@ describe('Create Deliveryman', () => {
     expect(inMemoryDeliverymenRepository.items[0].password).toEqual(
       hashedPassword,
     )
+  })
+
+  it('should not be able to create an existing deliveryman', async () => {
+    inMemoryDeliverymenRepository.items.push(
+      makeDeliveryman({
+        name: 'John Doe',
+        cpf: CPF.create('123.123.123-00'),
+        password: '123456',
+      }),
+    )
+
+    const result = await sut.execute({
+      name: 'John Doe',
+      cpf: '123.123.123-00',
+      password: '123456',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(AccountAlreadyExistsError)
   })
 })

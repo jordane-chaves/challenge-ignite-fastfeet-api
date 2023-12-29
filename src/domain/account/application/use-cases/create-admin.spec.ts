@@ -1,7 +1,10 @@
 import { FakeHasher } from 'test/cryptography/fake-hasher'
+import { makeAdmin } from 'test/factories/make-admin'
 import { InMemoryAdminsRepository } from 'test/repositories/in-memory-admins-repository'
 
+import { CPF } from '../../enterprise/entities/value-objects/cpf'
 import { CreateAdminUseCase } from './create-admin'
+import { AccountAlreadyExistsError } from './errors/account-already-exists-error'
 
 let inMemoryAdminsRepository: InMemoryAdminsRepository
 let fakeHasher: FakeHasher
@@ -40,5 +43,24 @@ describe('Create Admin', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryAdminsRepository.items[0].password).toEqual(hashedPassword)
+  })
+
+  it('should not be able to create an existing admin', async () => {
+    inMemoryAdminsRepository.items.push(
+      makeAdmin({
+        name: 'John Doe',
+        cpf: CPF.create('123.123.123-00'),
+        password: '123456',
+      }),
+    )
+
+    const result = await sut.execute({
+      name: 'John Doe',
+      cpf: '123.123.123-00',
+      password: '123456',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(AccountAlreadyExistsError)
   })
 })
