@@ -1,5 +1,7 @@
 @baseUrl = http://localhost:3333
-@authToken = {{authenticate_admin.response.body.$.access_token}}
+@authTokenAdmin = {{authenticate_admin.response.body.$.access_token}}
+@authTokenDeliveryman = {{authenticate_deliveryman.response.body.$.access_token}}
+@authTokenRecipient = {{authenticate_recipient.response.body.$.access_token}}
 
 # @name authenticate_admin
 POST {{baseUrl}}/sessions/admin
@@ -7,6 +9,17 @@ Content-Type: application/json
 
 {
   "cpf": "123.123.123-01",
+  "password": "123456"
+}
+
+###
+
+# @name authenticate_recipient
+POST {{baseUrl}}/sessions/recipient
+Content-Type: application/json
+
+{
+  "cpf": "123.123.123-02",
   "password": "123456"
 }
 
@@ -21,12 +34,12 @@ Content-Type: application/json
   "password": "123456"
 }
 
-###
+### ACCOUNT
 
 # @name create_admin
 POST {{baseUrl}}/accounts/admin
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{authTokenAdmin}}
 
 {
   "name": "John Doe",
@@ -39,7 +52,7 @@ Authorization: Bearer {{authToken}}
 # @name create_recipient
 POST {{baseUrl}}/accounts/recipient
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{authTokenAdmin}}
 
 {
   "name": "John Doe 2",
@@ -57,7 +70,7 @@ Authorization: Bearer {{authToken}}
 # @name create_deliveryman
 POST {{baseUrl}}/accounts/deliveryman
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{authTokenAdmin}}
 
 {
   "name": "John Doe 3",
@@ -65,12 +78,12 @@ Authorization: Bearer {{authToken}}
   "password": "123456"
 }
 
-###
+### ORDER
 
 # @name create_order
 POST {{baseUrl}}/orders
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{authTokenAdmin}}
 
 {
   "customerId": "{{create_recipient.response.body.$.recipient.id}}",
@@ -79,7 +92,46 @@ Authorization: Bearer {{authToken}}
 
 ###
 
+# @name post_order
+PATCH {{baseUrl}}/orders/{{create_order.response.body.$.order.id}}/post
+Content-Type: application/json
+Authorization: Bearer {{authTokenAdmin}}
+
+###
+
 # @name withdraw_order
 PATCH {{baseUrl}}/orders/{{create_order.response.body.$.order.id}}/withdraw
 Content-Type: application/json
-Authorization: Bearer {{authenticate_deliveryman.response.body.$.access_token}}
+Authorization: Bearer {{authTokenDeliveryman}}
+
+###
+
+# @name upload_image
+POST {{baseUrl}}/images
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer {{authTokenDeliveryman}}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample-upload.png"
+Content-Type: image/png
+
+< ./test/e2e/sample-upload.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# @name deliver_order
+PATCH {{baseUrl}}/orders/{{create_order.response.body.$.order.id}}/deliver
+Content-Type: application/json
+Authorization: Bearer {{authTokenDeliveryman}}
+
+{
+  "imageId": "{{upload_image.response.body.$.imageId}}"
+}
+
+### NOTIFICATION
+
+# @name fetch_notifications
+GET {{baseUrl}}/notifications
+Content-Type: application/json
+Authorization: Bearer {{authTokenRecipient}}
