@@ -1,9 +1,11 @@
 import { DomainEvents } from '@/core/events/domain-events'
 import { EventHandler } from '@/core/events/event-handler'
 import { OrderWithdrawnEvent } from '@/domain/order/enterprise/events/order-withdrawn'
+import { Injectable } from '@nestjs/common'
 
 import { SendNotificationUseCase } from '../use-cases/send-notification'
 
+@Injectable()
 export class OnOrderWithdrawn implements EventHandler {
   constructor(private sendNotification: SendNotificationUseCase) {
     this.setupSubscriptions()
