@@ -1,3 +1,4 @@
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { NotificationsRepository } from '@/domain/notification/application/repositories/notifications-repository'
 import { Notification } from '@/domain/notification/enterprise/entities/notification'
 import { Injectable } from '@nestjs/common'
@@ -8,6 +9,21 @@ import { PrismaService } from '../prisma.service'
 @Injectable()
 export class PrismaNotificationsRepository implements NotificationsRepository {
   constructor(private prisma: PrismaService) {}
+
+  async findManyByRecipientId(
+    recipientId: string,
+    { page, perPage }: PaginationParams,
+  ): Promise<Notification[]> {
+    const notifications = await this.prisma.notification.findMany({
+      where: {
+        recipientId,
+      },
+      take: perPage,
+      skip: (page - 1) * perPage,
+    })
+
+    return notifications.map(PrismaNotificationMapper.toDomain)
+  }
 
   async findById(id: string): Promise<Notification | null> {
     const notification = await this.prisma.notification.findUnique({

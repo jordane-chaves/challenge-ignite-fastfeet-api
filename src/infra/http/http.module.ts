@@ -12,6 +12,7 @@ import { EditDeliverymanUseCase } from '@/domain/account/application/use-cases/e
 import { EditRecipientUseCase } from '@/domain/account/application/use-cases/edit-recipient'
 import { GetDeliverymanUseCase } from '@/domain/account/application/use-cases/get-deliveryman'
 import { GetRecipientUseCase } from '@/domain/account/application/use-cases/get-recipient'
+import { FetchNotificationsUseCase } from '@/domain/notification/application/use-cases/fetch-notifications'
 import { ReadNotificationUseCase } from '@/domain/notification/application/use-cases/read-notification'
 import { CreateOrderUseCase } from '@/domain/order/application/use-cases/create-order'
 import { DeleteOrderUseCase } from '@/domain/order/application/use-cases/delete-order'
@@ -50,6 +51,7 @@ import { EditRecipientController } from './controllers/edit-recipient.controller
 import { FetchCustomerOrdersController } from './controllers/fetch-customer-orders.controller'
 import { FetchDeliverymanOrdersController } from './controllers/fetch-deliveryman-orders.controller'
 import { FetchNearbyOrdersController } from './controllers/fetch-nearby-orders.controller'
+import { FetchNotificationsController } from './controllers/fetch-notifications.controller'
 import { GetDeliverymanController } from './controllers/get-deliveryman.controller'
 import { GetOrderController } from './controllers/get-order.controller'
 import { GetRecipientController } from './controllers/get-recipient.controller'
@@ -81,6 +83,7 @@ import { WithdrawOrderController } from './controllers/withdraw-order.controller
     FetchCustomerOrdersController,
     FetchDeliverymanOrdersController,
     FetchNearbyOrdersController,
+    FetchNotificationsController,
     GetDeliverymanController,
     GetRecipientController,
     GetOrderController,
@@ -110,6 +113,7 @@ import { WithdrawOrderController } from './controllers/withdraw-order.controller
     FetchCustomerOrdersUseCase,
     FetchDeliverymanOrdersUseCase,
     FetchNearbyOrdersUseCase,
+    FetchNotificationsUseCase,
     GetDeliverymanUseCase,
     GetRecipientUseCase,
     GetOrderUseCase,
